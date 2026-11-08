@@ -50,13 +50,19 @@ build() {
     local flags=(
         -std=c++23
         -O3
+	-ftree-vectorize
+	-fopenmp
+	-ffunction-sections
+	-fdata-sections
+	-fexpensive-optimizations
+	-fno-rtti
         -DNDEBUG
         -Wall
         -Wextra
         -Wpedantic
     )
 
-    "$compiler" "${flags[@]}" ${CXXFLAGS:-} "$source_file" -o "$temp_output" ${LDFLAGS:-}
+    "$compiler" "${flags[@]}" ${CXXFLAGS:-} "$source_file" -o "$temp_output" ${LDFLAGS:--Wl,--gc-sections -Wl,--print-gc-sections -Wl,-s}
     cp -f "$temp_output" "$output"
     chmod +x "$output"
     echo "Built $output"
